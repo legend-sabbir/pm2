@@ -1,3 +1,4 @@
+const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
 const app = express();
@@ -5,21 +6,20 @@ app.use(cors());
 
 const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
 const arr = []
+let index = +fs.readFileSync("index.txt", "utf8")
 
-app.get('/start', (req, res) => {
-  res.send("started")
-  for (let i = 0; i < 50; i++) {
-    arr.push(i)
-  }
-});
-
-let track = 1
 
 app.get('/get', (req, res) => {
-  res.json(arr)
-  console.log("success: " + track++)
+  res.send(index.toString())
 });
 
+setTimeout(async () => {
+  while (true) {
+    index = +fs.readFileSync("index.txt", "utf8") + 1
+    fs.writeFileSync("index.txt", JSON.stringify(index), "utf8")
+    await sleep(2000)
+  }
+}, 100)
 
 
 const port = process.env.PORT || 3000;
