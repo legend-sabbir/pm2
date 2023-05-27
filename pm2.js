@@ -17,7 +17,7 @@ setTimeout(async () => {
   while (true) {
     index = +fs.readFileSync("index.txt", "utf8") + 1
     fs.writeFileSync("index.txt", JSON.stringify(index), "utf8")
-    await sleep(2000)
+    await sleep(5000)
   }
 }, 100)
 
