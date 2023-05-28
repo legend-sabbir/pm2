@@ -53,8 +53,7 @@ async function likeSolutions(id, i) {
       headers
     });
     
-    console.log(response.status)
-    if (i % 20 === 0) {
+    if (i % 40 === 0) {
       console.log(i)
     }
     
