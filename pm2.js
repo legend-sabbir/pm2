@@ -1,3 +1,4 @@
+const axios = require('axios');
 const fs = require('fs');
 const express = require('express');
 const cors = require('cors');
@@ -6,7 +7,6 @@ app.use(cors());
 
 const challenges3 = require("./challenges3.json")
 const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
-const arr = []
 let index = +fs.readFileSync("index.txt", "utf8")
 
 
@@ -53,6 +53,7 @@ async function likeSolutions(id, i) {
       headers
     });
     
+    console.log(response.status)
     if (i % 20 === 0) {
       console.log(i)
     }
