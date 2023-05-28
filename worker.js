@@ -44,7 +44,7 @@ async function likeSolutions(id, i) {
       headers
     });
     
-    if (i % 40) { console.log(i) }
+    if (i % 50 === 0) { console.log(i) }
   } catch (error) {
     console.log("like fail: " + id);
   }
