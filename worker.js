@@ -11,7 +11,7 @@ async function startLikeWorker() {
     const challenge = challenges3[i];
     if (!challenge.isLiked) {
       await likeSolutions(challenge.id, index);
-      await sleep(1500);
+      await sleep(1000);
       index++;
       parentPort.postMessage({ type: 'updateIndex', index });
     }

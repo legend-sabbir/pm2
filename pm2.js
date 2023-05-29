@@ -46,7 +46,7 @@ const cors = require('cors');
 const { Worker } = require('worker_threads');
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-const uri = "mongodb+srv://legend-sabbir:6890lsyt@cluster0.nkllpci.mongodb.net/?retryWrites=true&w=majority";
+const uri = `mongodb+srv://${process.env.id}:${process.env.pass}@cluster0.nkllpci.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
