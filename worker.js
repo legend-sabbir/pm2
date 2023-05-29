@@ -1,10 +1,9 @@
 const { workerData, parentPort } = require('worker_threads');
 const axios = require('axios');
-const fs = require('fs');
 
 const challenges3 = require("./challenges3.json");
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-let index = +fs.readFileSync("index.txt", "utf8");
+let index = workerData.index;
 
 async function startLikeWorker() {
   for (let i = index; i <= challenges3.length; i++) {
@@ -14,7 +13,6 @@ async function startLikeWorker() {
       await likeSolutions(challenge.id, index);
       await sleep(1500);
       index++;
-      // Send the updated index value to the main thread
       parentPort.postMessage({ type: 'updateIndex', index });
     }
   }
@@ -43,8 +41,6 @@ async function likeSolutions(id, i) {
     const response = await axios.post(`https://backend.frontendmentor.io/rest/v2/solutions/${id}/like`, null, {
       headers
     });
-    
-    if (i % 50 === 0) { console.log(i) }
   } catch (error) {
     console.log("like fail: " + id);
   }
