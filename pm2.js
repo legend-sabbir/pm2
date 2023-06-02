@@ -1,52 +1,14 @@
-/*const axios = require('axios');
-const fs = require('fs');
 const express = require('express');
+const axios = require("axios")
 const cors = require('cors');
+const { MongoClient, ServerApiVersion } = require('mongodb');
+const users = require("./users.json")
+
 const app = express();
 app.use(cors());
 
-const challenges3 = require("./challenges3.json")
-const sleep = (ms) =>  new Promise(resolve => setTimeout(resolve, ms))
-let index = +fs.readFileSync("index.txt", "utf8")
-
-
-app.get('/get', (req, res) => {
-  res.send(index.toString())
-});
-
-app.get('/start', (req, res) => {
-  res.send("started")
-  startLike()
-});
-
-
-async function startLike() {
-  for (let i = index; i <= challenges3.length; i++) {
-    if (index >= challenges3.length ) return 
-    const challenge = challenges3[i]
-    if (!challenge.isLiked) {
-      await likeSolutions(challenge.id, index)
-      await sleep(1500)
-      index++
-      fs.writeFileSync("index.txt", JSON.stringify(index), "utf8")
-    }
-  }
-}
-
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server is listening on port ${port}`);
-});*/
-
-// main.js
-
-const express = require('express');
-const cors = require('cors');
-const { Worker } = require('worker_threads');
-const { MongoClient, ServerApiVersion } = require('mongodb');
-
-const uri = `mongodb+srv://${process.env.id}:${process.env.pass}@cluster0.nkllpci.mongodb.net/?retryWrites=true&w=majority`;
+// const uri = `mongodb+srv://${process.env.id}:${process.env.pass}@cluster0.nkllpci.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://legend-sabbir:6890lsyt@cluster0.nkllpci.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
   serverApi: {
     version: ServerApiVersion.v1,
@@ -55,33 +17,32 @@ const client = new MongoClient(uri, {
   }
 });
 
-const app = express();
-app.use(cors());
-
+const len = users.length
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+const headers = {
+      'Accept': 'application/json, text/plain, */*',
+      'Accept-Encoding': 'gzip, deflate, br',
+      'Accept-Language': 'en-US,en;q=0.9',
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2Q1NmI4Njg0NDhlNTBjYTc0NGRmNWEiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTY4NTAwOTQ5MywiZXhwIjoxNjg3NjAxNDkzfQ.mRbSxGri3MUC74gNcIuh0ywNRGwliukApAyP2Rs1yg0',
+      'Content-Length': '0',
+      'Content-Type': 'application/x-www-form-urlencoded',
+      'Origin': 'https://www.frontendmentor.io',
+      'Referer': 'https://www.frontendmentor.io/',
+      'Sec-Ch-Ua': '"Not:A-Brand";v="99", "Chromium";v="112"',
+      'Sec-Ch-Ua-Mobile': '?1',
+      'Sec-Ch-Ua-Platform': '"Android"',
+      'Sec-Fetch-Dest': 'empty',
+      'Sec-Fetch-Mode': 'cors',
+      'Sec-Fetch-Site': 'same-site',
+      'User-Agent': 'Mozilla/5.0 (Linux; Android 9; JKM-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
+    };
 let index
 
 app.get('/get', async (req, res) => {
   res.send(index.toString())
 });
 
-async function startLike() {
-  const worker = new Worker('./worker.js', { workerData: { index } });
-
-  worker.on('message', async (message) => {
-    if (message.type === 'updateIndex') {
-      index = message.index;
-      if (index % 100 === 0) {
-        console.log(index)
-        await saveIndex(index)
-      } 
-    }
-  });
-
-  worker.postMessage('start');
-}
-
-async function saveIndex() {
+async function saveIndex(index) {
   try {
     await client.connect();
     await client.db("indexDb").collection("index").updateOne({}, { $set: { index: index } });
@@ -106,10 +67,44 @@ async function retrieveIndex() {
   }
 }
 
+/*async function startFollow() {
+  const len = users.length
+  for (let i = index; i <= len; i++) {
+    await followUser(users[i])
+    await sleep(2000)
+    if (i % 50 === 0) {
+      console.log(i)
+      await saveIndex(i)
+    }
+  }
+}*/
+
+async function startFollow() {
+  await followUser(users[index])
+  await sleep(2000)
+  if (index % 50 === 0) {
+    saveIndex(index)
+    console.log(index)
+  }
+  index++
+  if (!index >= len) return
+  startFollow()
+}
+
+async function followUser(user) {
+  try {
+    const response = await axios.post(`https://backend.frontendmentor.io/rest/v2/auth/profile/follow/users/${user}`, null, {
+      headers
+    });
+  } catch (error) {
+    console.log("fail: " + user)
+  }
+}
+
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server is listening on port ${port}`);
 });
 
 
-retrieveIndex().then(startLike).catch(console.error)
+retrieveIndex().then(startFollow).catch(console.error)
