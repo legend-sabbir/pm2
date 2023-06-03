@@ -19,22 +19,22 @@ const client = new MongoClient(uri, {
 const len = users.length
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const headers = {
-      'Accept': 'application/json, text/plain, */*',
-      'Accept-Encoding': 'gzip, deflate, br',
-      'Accept-Language': 'en-US,en;q=0.9',
-      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2Q1NmI4Njg0NDhlNTBjYTc0NGRmNWEiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTY4NTAwOTQ5MywiZXhwIjoxNjg3NjAxNDkzfQ.mRbSxGri3MUC74gNcIuh0ywNRGwliukApAyP2Rs1yg0',
-      'Content-Length': '0',
-      'Content-Type': 'application/x-www-form-urlencoded',
-      'Origin': 'https://www.frontendmentor.io',
-      'Referer': 'https://www.frontendmentor.io/',
-      'Sec-Ch-Ua': '"Not:A-Brand";v="99", "Chromium";v="112"',
-      'Sec-Ch-Ua-Mobile': '?1',
-      'Sec-Ch-Ua-Platform': '"Android"',
-      'Sec-Fetch-Dest': 'empty',
-      'Sec-Fetch-Mode': 'cors',
-      'Sec-Fetch-Site': 'same-site',
-      'User-Agent': 'Mozilla/5.0 (Linux; Android 9; JKM-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
-    };
+    'Accept': 'application/json, text/plain, */*',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Accept-Language': 'en-US,en;q=0.9',
+    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2M2Q1NmI4Njg0NDhlNTBjYTc0NGRmNWEiLCJhZG1pbiI6ZmFsc2UsImlhdCI6MTY4NTAwOTQ5MywiZXhwIjoxNjg3NjAxNDkzfQ.mRbSxGri3MUC74gNcIuh0ywNRGwliukApAyP2Rs1yg0',
+    'Content-Length': '0',
+    'Content-Type': 'application/x-www-form-urlencoded',
+    'Origin': 'https://www.frontendmentor.io',
+    'Referer': 'https://www.frontendmentor.io/',
+    'Sec-Ch-Ua': '"Not:A-Brand";v="99", "Chromium";v="112"',
+    'Sec-Ch-Ua-Mobile': '?1',
+    'Sec-Ch-Ua-Platform': '"Android"',
+    'Sec-Fetch-Dest': 'empty',
+    'Sec-Fetch-Mode': 'cors',
+    'Sec-Fetch-Site': 'same-site',
+    'User-Agent': 'Mozilla/5.0 (Linux; Android 9; JKM-LX1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Mobile Safari/537.36'
+  };
 let index
 
 app.get('/get', async (req, res) => {
@@ -66,28 +66,19 @@ async function retrieveIndex() {
   }
 }
 
-/*async function startFollow() {
-  const len = users.length
-  for (let i = index; i <= len; i++) {
-    await followUser(users[i])
-    await sleep(2000)
-    if (i % 50 === 0) {
-      console.log(i)
-      await saveIndex(i)
-    }
-  }
-}*/
-
 async function startFollow() {
   await followUser(users[index])
   await sleep(2000)
   if (index % 50 === 0) {
-    saveIndex(index)
+    await saveIndex(index)
     console.log(index)
   }
   index++
-  if (!index >= len) return
-  startFollow()
+  if (index >= len) {
+    return 
+  } else {
+    startFollow()
+  }
 }
 
 async function followUser(user) {
